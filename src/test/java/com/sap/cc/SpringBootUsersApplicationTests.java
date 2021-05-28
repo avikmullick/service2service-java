@@ -1,10 +1,10 @@
-package com.sap.cc.springbootskeleton;
+package com.sap.cc;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SpringBootSkeletonApplicationTests {
+class SpringBootUsersApplicationTests {
 
 	@Test
 	void contextLoads() {
