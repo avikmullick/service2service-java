@@ -1,6 +1,7 @@
 package com.sap.cc.users;
 
 import com.sap.cc.NotFoundException;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
@@ -40,9 +41,16 @@ public class UserController {
         Optional<User> user = userStorage.retrieveUserById(id);
 
         if (user.isPresent()) {
-            return ResponseEntity.ok(user.get().toString());
+
+            String prettyPage = getPrettyPage(user.get());
+
+            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(prettyPage);
         }
 
         throw new NotFoundException();
+    }
+
+    private String getPrettyPage(User user) {
+        return user.getName() + System.lineSeparator() + user.getPhoneNumber();
     }
 }
