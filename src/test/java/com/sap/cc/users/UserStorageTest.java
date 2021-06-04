@@ -3,6 +3,7 @@ package com.sap.cc.users;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +12,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 public class UserStorageTest {
 
-    private UserStorage userStorage = new InMemoryUserStorage();
+    private UserStorage userStorage = new InMemoryUserStorage(Collections.emptyList());
 
     private final User JOHN = new User("John Lennon", "51351 83511", "0");
     private final User RINGO = new User("Ringo Star", "31866 3516835", "1");

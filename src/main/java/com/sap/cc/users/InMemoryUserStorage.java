@@ -9,6 +9,10 @@ public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Long, User> users = new HashMap<>();
 
+    public InMemoryUserStorage(List<User> defaultUsers) {
+        defaultUsers.forEach(this::saveUser);
+    }
+
     @Override
     public User saveUser(final User user) {
         boolean isUserIdEmptyOrNonExisting = user.getId() == null || !users.containsKey(user.getId());
