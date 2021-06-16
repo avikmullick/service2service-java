@@ -50,7 +50,7 @@ public class UserController {
         throw new NotFoundException();
     }
 
-    private String getPrettyPage(User user) {
+    public String getPrettyPage(User user) {
         return user.getName() + System.lineSeparator() + user.getPhoneNumber();
     }
 }
