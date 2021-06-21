@@ -15,10 +15,12 @@ import java.util.Optional;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
+    private PrettyUserPageCreator prettyUserPageCreator;
     private UserStorage userStorage;
 
-    public UserController(UserStorage userStorage) {
+    public UserController(UserStorage userStorage, PrettyUserPageCreator prettyUserPageCreator) {
         this.userStorage = userStorage;
+        this.prettyUserPageCreator = prettyUserPageCreator;
     }
 
     @PostMapping
@@ -42,15 +44,11 @@ public class UserController {
 
         if (user.isPresent()) {
 
-            String prettyPage = getPrettyPage(user.get());
+            String prettyPage = prettyUserPageCreator.getPrettyPage(user.get());
 
             return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(prettyPage);
         }
 
         throw new NotFoundException();
-    }
-
-    public String getPrettyPage(User user) {
-        return user.getName() + System.lineSeparator() + user.getPhoneNumber();
     }
 }
