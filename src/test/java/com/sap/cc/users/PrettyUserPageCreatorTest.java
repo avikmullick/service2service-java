@@ -10,11 +10,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PrettyUserPageCreatorTest {
 
     @Autowired
-    private PrettyUserPageCreator prettyUserPageCreator = new PrettyUserPageCreator();
+    private PrettyUserPageCreator prettyUserPageCreator;
 
     @Test
-    void prettyPageGetsPrinted() {
-        User user = new User("Richard S.", "+49 789456123", "1");
+    void shouldCreateAPrettyUserPage() {
+        User user = new User("someName", "somePhoneNumber", "1");
 
         assertThat(prettyUserPageCreator.getPrettyPage(user)).isEqualTo(user.getName() + System.lineSeparator() + user.getPhoneNumber());
     }
