@@ -1,68 +1,56 @@
 package com.sap.cc.users;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.util.NestedServletException;
 
-import static org.hamcrest.CoreMatchers.*;
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 public class UserControllerTest {
-    private static final String API_V1_USERS_PATH = "/api/v1/users";
-
-    @Autowired
-    private UserStorage userStorage;
+    private static final String API_V1_USERS_PATH = "/api/v1/users/pretty";
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @MockBean
+    private UserStorage userStorage;
 
-    @BeforeEach
-    public void beforeEach() {
-        userStorage.deleteAllUsers();
-    }
-
-    @Test
-    public void signUpUser_returnsCreatedUser() throws Exception {
-
-        User myUser = new User("John", "06252 584828", "0");
-        String jsonBody = objectMapper.writeValueAsString(myUser);
-
-        MockHttpServletResponse response = this.mockMvc
-                .perform(post(API_V1_USERS_PATH).content(jsonBody)
-                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated()).andExpect(jsonPath("$.name", is(myUser.getName())))
-                .andExpect(jsonPath("$.phoneNumber", is(myUser.getPhoneNumber())))
-                .andExpect(jsonPath("$.fontPreference", is(myUser.getFontPreference())))
-                .andExpect(jsonPath("$.id", notNullValue())).andReturn().getResponse();
-
-        User returnedUser = objectMapper.readValue(response.getContentAsString(), User.class);
-        assertThat(response.getHeader("location"), is(API_V1_USERS_PATH + "/" + returnedUser.getId()));
-    }
+    @MockBean
+    private PrettyUserPageCreator prettyUserPageCreator;
 
     @Test
     void printPrettyPage_returnsUserAttributes() throws Exception {
-        User myUser = new User("John", "06252 584828", "0");
-        String jsonBody = objectMapper.writeValueAsString(myUser);
+        Optional<User> optionalUser = Optional.of(new User("someName", "someNumber", "2"));
 
-        MockHttpServletResponse response = this.mockMvc
-                .perform(post(API_V1_USERS_PATH).content(jsonBody)
-                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
+        when(userStorage.retrieveUserById(2L)).thenReturn(optionalUser);
+        when(prettyUserPageCreator.getPrettyPage(optionalUser.get())).thenReturn("somePrettyName" + System.lineSeparator() + "somePrettyNumber");
 
-        assertThat(response.getContentAsString(), containsString("John"));
-        assertThat(response.getContentAsString(), containsString("06252 584828"));
+        MockHttpServletResponse response = this.mockMvc.perform(get(API_V1_USERS_PATH + "/2")).andReturn().getResponse();
+
+        assertThat(response.getContentAsString(), containsString("somePrettyName"));
+        assertThat(response.getContentAsString(), containsString("somePrettyNumber"));
+    }
+
+    @Test
+    void printPrettyPageThrowsIAE_whenIdIsLessThanOne() {
+        NestedServletException nestedServletException = assertThrows(NestedServletException.class,
+                () -> this.mockMvc.perform(get(API_V1_USERS_PATH + "/0")).andReturn().getResponse());
+
+        Throwable cause = nestedServletException.getCause();
+        assertThat(cause, instanceOf(IllegalArgumentException.class));
     }
 }
