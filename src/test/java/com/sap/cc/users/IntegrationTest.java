@@ -17,6 +17,6 @@ public class IntegrationTest {
     @Test
     void returnsPrettyPage() {
         String prettyPage = restTemplate.getForEntity("/api/v1/users/pretty/1", String.class).getBody();
-        assertThat(prettyPage).contains("\n");
+        assertThat(prettyPage).contains("\r\n");
     }
 }

@@ -16,6 +16,6 @@ class PrettyUserPageCreatorTest {
     void shouldCreateAPrettyUserPage() {
         User user = new User("someName", "somePhoneNumber", "1");
 
-        assertThat(prettyUserPageCreator.getPrettyPage(user)).isEqualTo(user.getName() + System.lineSeparator() + user.getPhoneNumber());
+        assertThat(prettyUserPageCreator.getPrettyPage(user)).isEqualTo(user.getName() + "\r\n" + user.getPhoneNumber());
     }
 }

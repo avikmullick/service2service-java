@@ -8,6 +8,6 @@ public class PrettyUserPageCreator {
     }
 
     public String getPrettyPage(User user) {
-        return user.getName() + System.lineSeparator() + user.getPhoneNumber();
+        return user.getName() + "\r\n" + user.getPhoneNumber();
     }
 }
