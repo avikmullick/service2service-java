@@ -2,9 +2,11 @@ package com.sap.cc.users;
 
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,11 +14,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class IntegrationTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private WebTestClient webTestClient;
 
     @Test
+    @Disabled
     void returnsPrettyPage() {
-        String prettyPage = restTemplate.getForEntity("/api/v1/users/pretty/1", String.class).getBody();
-        assertThat(prettyPage).contains("\r\n");
+        webTestClient
+                .get().uri("/api/v1/users/pretty/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class).value(response -> {
+                    assertThat(response).contains("\r\n");
+                });
     }
 }
