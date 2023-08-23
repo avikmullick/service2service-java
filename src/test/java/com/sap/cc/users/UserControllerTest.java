@@ -1,5 +1,6 @@
 package com.sap.cc.users;
 
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -7,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.util.NestedServletException;
 
 import java.util.Optional;
 
@@ -47,7 +47,7 @@ public class UserControllerTest {
 
     @Test
     void printPrettyPageThrowsIAE_whenIdIsLessThanOne() {
-        NestedServletException nestedServletException = assertThrows(NestedServletException.class,
+        ServletException nestedServletException = assertThrows(ServletException.class,
                 () -> this.mockMvc.perform(get(API_V1_USERS_PATH + "/0")).andReturn().getResponse());
 
         Throwable cause = nestedServletException.getCause();
